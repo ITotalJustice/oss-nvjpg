@@ -172,11 +172,12 @@ NvjpgPictureInfo *Decoder::build_picture_info_common(RingEntry &entry, const Ima
     }
 
     for (std::size_t i = 0; i < image.num_components; ++i) {
-        info->components[i].sampling_horiz = image.components[i].sampling_horiz;
-        info->components[i].sampling_vert  = image.components[i].sampling_vert;
-        info->components[i].quant_table_id = image.components[i].quant_table_id;
-        info->components[i].hm_ac_table_id = image.components[i].hm_ac_table_id;
-        info->components[i].hm_dc_table_id = image.components[i].hm_dc_table_id;
+        auto id = image.comp_idx[i];
+        info->components[i].sampling_horiz = image.components[id].sampling_horiz;
+        info->components[i].sampling_vert  = image.components[id].sampling_vert;
+        info->components[i].quant_table_id = image.components[id].quant_table_id;
+        info->components[i].hm_ac_table_id = image.components[id].hm_ac_table_id;
+        info->components[i].hm_dc_table_id = image.components[id].hm_dc_table_id;
     }
 
     info->restart_interval      = image.restart_interval;

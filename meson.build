@@ -7,7 +7,7 @@ project('nvjpg', ['c', 'cpp'], version: '1.1.0',
         'strip=false',
         'warning_level=2',
         'c_std=gnu11',
-        'cpp_std=gnu++2a',
+        'cpp_std=gnu++20',
     ],
 )
 

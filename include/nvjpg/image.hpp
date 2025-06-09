@@ -85,7 +85,8 @@ class Image {
         std::uint8_t   spectral_selection_lo = 0;
         std::uint8_t   spectral_selection_hi = 0;
 
-        std::array<Component,         3> components   = {};
+        std::array<std::uint8_t,      3> comp_idx     = {};
+        std::array<Component,         4> components   = {};
         std::array<QuantizationTable, 4> quant_tables = {};
         std::array<HuffmanTable,      4> hm_ac_tables = {};
         std::array<HuffmanTable,      4> hm_dc_tables = {};

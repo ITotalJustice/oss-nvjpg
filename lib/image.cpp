@@ -79,7 +79,11 @@ int Image::parse_sof(JpegSegmentHeader seg, Bitstream &bs) {
 
     std::uint8_t max_samp_h = 0, max_samp_v = 0;
     for (std::size_t i = 0; i < this->num_components; ++i) {
-        auto id = bs.get<std::uint8_t>() - 1;
+        auto id = bs.get<std::uint8_t>();
+        if (id >= this->components.size())
+            return EINVAL;
+
+        this->comp_idx[i] = id;
 
         auto sampling = bs.get<std::uint8_t>();
         this->components[id].sampling_vert  = sampling >> 0 & mask(4u);
@@ -95,13 +99,14 @@ int Image::parse_sof(JpegSegmentHeader seg, Bitstream &bs) {
     this->mcu_size_vert  = 8 * max_samp_v;
 
     if (this->num_components == 3) {
-        if ((this->components[0].sampling_vert == 2) && (this->components[0].sampling_horiz == 2))
+        auto id = this->comp_idx[0];
+        if ((this->components[id].sampling_vert == 2) && (this->components[id].sampling_horiz == 2))
             this->sampling = SamplingFormat::S420;
-        if ((this->components[0].sampling_vert == 2) && (this->components[0].sampling_horiz != 2))
+        if ((this->components[id].sampling_vert == 2) && (this->components[id].sampling_horiz != 2))
             this->sampling = SamplingFormat::S440;
-        if ((this->components[0].sampling_vert != 2) && (this->components[0].sampling_horiz == 2))
+        if ((this->components[id].sampling_vert != 2) && (this->components[id].sampling_horiz == 2))
             this->sampling = SamplingFormat::S422;
-        if ((this->components[0].sampling_vert != 2) && (this->components[0].sampling_horiz != 2))
+        if ((this->components[id].sampling_vert != 2) && (this->components[id].sampling_horiz != 2))
             this->sampling = SamplingFormat::S444;
     } else {
         this->sampling = SamplingFormat::Monochrome;
@@ -182,8 +187,10 @@ int Image::parse_sos(JpegSegmentHeader seg, Bitstream &bs) {
         return EINVAL;
 
     for (std::size_t i = 0; i < num_comps; ++i) {
-        auto id   = bs.get<std::uint8_t>() - 1;
+        auto id   = bs.get<std::uint8_t>();
         auto info = bs.get<std::uint8_t>();
+        if (id >= this->components.size())
+            return EINVAL;
 
         this->components[id].hm_ac_table_id = info >> 0 & mask(4u);
         this->components[id].hm_dc_table_id = info >> 4 & mask(4u);
